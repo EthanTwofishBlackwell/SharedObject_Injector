@@ -16,8 +16,7 @@ To install and use:
 
 **YOUR SHARED OBJECT MUST INCLUDE AN `__attribute__((constructor))` TO BE COMPATIBLE, SEE EXAMPLESO.C**
 
-sudo apt install -y gcc gdb libdl-dev
-
-git clone https://github.com/EthanTwofishBlackwell/.so-injector
-cd .so-injector
-Then python3 injector.py /path/to/sharedobjectname.so output
+<code>sudo apt install -y gcc gdb libdl-dev<br>
+git clone https://github.com/EthanTwofishBlackwell/.so-injector<br>
+cd .so-injector<br>
+Then python3 injector.py /path/to/sharedobjectname.so output</code>
