@@ -10,14 +10,13 @@ The compiled program when ran will inject into a random non root, non critical p
 
 Dependencies:
 
-gcc, gdb, libdl-dev
+gcc, gdb, libdl-dev, python3
 
 To install and use:
 
-**YOUR SHARED OBJECT MUST INCLUDE AN `__attribute__((constructor))` TO BE COMPATIBLE, SEE EXAMPLESO.C**
+**YOUR SHARED OBJECT MUST INCLUDE AN `__attribute__((constructor))` TO BE COMPATIBLE, SEE 'src/exampleSO2.C'**
 
-sudo apt install -y gcc gdb libdl-dev
-
-git clone https://github.com/EthanTwofishBlackwell/.so-injector
-cd .so-injector
-Then python3 injector.py /path/to/sharedobjectname.so output
+<code>sudo apt install -y gcc gdb libdl-dev python3<br>
+git clone https://github.com/EthanTwofishBlackwell/.so-injector<br>
+cd .so-injector<br>
+Then python3 injector.py /path/to/sharedobjectname.so output</code>
