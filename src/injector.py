@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-# humzak711 if you change my comments to be more "professional" I will rape you mark my words
+# humzak711 if you change my comments to be more "professional" I will r*** you mark my words
+# ^ Ethan we will end up canceled mate
 
 import sys
 import os
