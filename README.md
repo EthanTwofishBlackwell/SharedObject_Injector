@@ -17,6 +17,7 @@ To install and use:
 **YOUR SHARED OBJECT MUST INCLUDE AN `__attribute__((constructor))` TO BE COMPATIBLE, SEE 'src/exampleSO2.c'**
 
 `sudo apt install -y gcc gdb libdl-dev python3` <br>
-`git clone https://github.com/EthanTwofishBlackwell/.so-injector` <br>
-`cd .so-injector` <br>
+`git clone https://github.com/EthanTwofishBlackwell/SharedObject_Injector.git` <br>
+`cd SharedObject_Injector` <br>
+`cd src` <br>
 `Then python3 injector.py /path/to/sharedobjectname.so output` <br>
