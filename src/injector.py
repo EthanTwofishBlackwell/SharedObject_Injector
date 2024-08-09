@@ -192,6 +192,16 @@ int main() {{
 
     print(f"Generated source file: {output_path}") # confirm we made the baby
 
+# Executes file -b to determine the filetype of the file
+# if it is a .so it should contain 'shared object'
+# returns True if the file is a .so or else it will return False
+def is_shared_object(filepath):
+    try:
+        output = subprocess.check_output(["file", "-b", filepath], stderr=subprocess.DEVNULL)
+        return b"shared object" in output
+    except subprocess.CalledProcessError:
+        return False
+    
 def main():
     # make sure the correct number of arguments are provided, learn to fucking type
     if len(sys.argv) != 3:
@@ -208,7 +218,7 @@ def main():
         print(f"Error: The specified .so file does not exist: {so_path}")
         sys.exit(1)
 
-    if not so_path.endswith('.so'):
+    if is_shared_object(so_path) == False:
         print("Error: The specified file is not a shared object (.so) file.")
         sys.exit(1)
 
