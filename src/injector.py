@@ -195,7 +195,7 @@ int main() {{
 # Executes file -b to determine the filetype of the file
 # if it is a .so it should contain 'shared object'
 # returns True if the file is a .so or else it will return False
-def is_shared_object(filepath):
+def is_shared_object(filepath: str) -> bool:
     try:
         output = subprocess.check_output(["file", "-b", filepath], stderr=subprocess.DEVNULL)
         return b"shared object" in output
