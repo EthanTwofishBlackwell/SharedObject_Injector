@@ -7,13 +7,13 @@ import sys
 import os
 import subprocess
 
-def generate_source(so_path, output_path):
+def generate_source(so_path: str, output_path: str) -> None:
     # read the shared object file
     with open(so_path, 'rb') as so_file:
-        so_data = so_file.read()
+        so_data: bytes = so_file.read()
 
     # create the C source code that will have the shared object n give it a nice kiss :p
-    c_code = f"""
+    c_code: str = f"""
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -192,15 +192,25 @@ int main() {{
 
     print(f"Generated source file: {output_path}") # confirm we made the baby
 
+# Executes file -b to determine the filetype of the file
+# if it is a .so it should contain 'shared object'
+# returns True if the file is a .so or else it will return False
+def is_shared_object(filepath: str) -> bool:
+    try:
+        output: bytes = subprocess.check_output(["file", "-b", filepath], stderr=subprocess.DEVNULL)
+        return b"shared object" in output
+    except subprocess.CalledProcessError:
+        return False
+    
 def main():
     # make sure the correct number of arguments are provided, learn to fucking type
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} <so_path> <output_executable>")
         sys.exit(1)
 
-    so_path = sys.argv[1] # path to the shared object
-    output_executable = sys.argv[2] # output executable name
-    temp_source = "temp_source.c" # temp src file
+    so_path: str = sys.argv[1] # path to the shared object
+    output_executable: str = sys.argv[2] # output executable name
+    temp_source: str = "temp_source.c" # temp src file
     
     
     # really basic input validation for the .so file
@@ -208,7 +218,7 @@ def main():
         print(f"Error: The specified .so file does not exist: {so_path}")
         sys.exit(1)
 
-    if not so_path.endswith('.so'):
+    if is_shared_object(so_path) == False:
         print("Error: The specified file is not a shared object (.so) file.")
         sys.exit(1)
 
@@ -216,7 +226,7 @@ def main():
     generate_source(so_path, temp_source)
 
     # compile the generated C code
-    compile_cmd = f"gcc -o {output_executable} {temp_source} -ldl"
+    compile_cmd: str = f"gcc -o {output_executable} {temp_source} -ldl"
     result = subprocess.run(compile_cmd, shell=True, capture_output=True, text=True)
     
     # check if the compilation was successful
