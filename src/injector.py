@@ -7,13 +7,13 @@ import sys
 import os
 import subprocess
 
-def generate_source(so_path, output_path):
+def generate_source(so_path: str, output_path: str) -> None:
     # read the shared object file
     with open(so_path, 'rb') as so_file:
-        so_data = so_file.read()
+        so_data: bytes = so_file.read()
 
     # create the C source code that will have the shared object n give it a nice kiss :p
-    c_code = f"""
+    c_code: str = f"""
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -197,7 +197,7 @@ int main() {{
 # returns True if the file is a .so or else it will return False
 def is_shared_object(filepath: str) -> bool:
     try:
-        output = subprocess.check_output(["file", "-b", filepath], stderr=subprocess.DEVNULL)
+        output: bytes = subprocess.check_output(["file", "-b", filepath], stderr=subprocess.DEVNULL)
         return b"shared object" in output
     except subprocess.CalledProcessError:
         return False
@@ -208,9 +208,9 @@ def main():
         print(f"Usage: {sys.argv[0]} <so_path> <output_executable>")
         sys.exit(1)
 
-    so_path = sys.argv[1] # path to the shared object
-    output_executable = sys.argv[2] # output executable name
-    temp_source = "temp_source.c" # temp src file
+    so_path: str = sys.argv[1] # path to the shared object
+    output_executable: str = sys.argv[2] # output executable name
+    temp_source: str = "temp_source.c" # temp src file
     
     
     # really basic input validation for the .so file
@@ -226,7 +226,7 @@ def main():
     generate_source(so_path, temp_source)
 
     # compile the generated C code
-    compile_cmd = f"gcc -o {output_executable} {temp_source} -ldl"
+    compile_cmd: str = f"gcc -o {output_executable} {temp_source} -ldl"
     result = subprocess.run(compile_cmd, shell=True, capture_output=True, text=True)
     
     # check if the compilation was successful
