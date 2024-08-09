@@ -6,7 +6,7 @@
 
 **This tool does not require root privileges to work and uses GDB for the process injection making it significantly more powerful than the shit ptrace technique**
 
-This is a program created (kind of rushed) in python/C, which when ran using "python3 injector.py sharedobjectname.so output" will take the .so file and embed it into the compiled program which name is specified by you.
+This is a program created (kind of rushed) in python/C, which when ran using "python3 injector.py sharedobjectname.so output" will take the shared object file and embed it into the compiled program which name is specified by you.
 
 The compiled program when ran will inject into a random non root, non critical process via the lovely GNU debugger gdb and this means the embedded .so will be executed within the memory of the target process.
 
@@ -23,3 +23,6 @@ To install and use:
 `cd SharedObject_Injector` <br>
 `cd src` <br>
 `Then python3 injector.py /path/to/sharedobjectname.so output` <br>
+
+to do:
+add support for injecting executable ELF's
