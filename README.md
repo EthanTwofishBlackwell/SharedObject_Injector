@@ -1,6 +1,6 @@
 **FOR EDUCATIONAL PURPOSES ONLY, WE DO NOT CONDONE ANY MISUSE OF THIS REPOSITORY, THE AUTHORS CLAIM NO LIABILITY FOR ANY MISUSE, YOU ARE RESPONSIBLE FOR YOUR OWN ACTIONS, THIS REPOSITORY WAS CREATED TO LEARN ABOUT LINUX AND HOW YOU CAN CARRY OUT PROCESS INJECTIONS IN LINUX WITHOUT ELEVATED PRIVILEGES USING GDB**
 
-*Still a work in progress with changes to come, this version was coded in only 1-2 hours*
+*Still a work in progress with changes to come, currently supports shared object files, working on support for executable ELF files*
 
 *Do not be a fucking idiot and start creaming if you intend to misuse this for illegal purposes, if you cant code something like this you wont be able to do much with it*
 
