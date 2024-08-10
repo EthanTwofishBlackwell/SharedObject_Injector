@@ -20,4 +20,4 @@ To install and use:
 `cd SharedObject_Injector` <br>
 `cd src` <br>
 
-`Usage: python3 builder.py <ELF_path> <output_executable>`
+`Usage: python3 builder.py <ELF_path> <output_executable_filepath>`

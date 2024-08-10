@@ -7,7 +7,7 @@ import sys
 import os
 import subprocess
 
-def generate_source_exe(so_path: str, output_path: str) -> None:
+def generate_source_exe(exe_path: str, output_path: str) -> None:
     pass
 
 def generate_source_so(so_path: str, output_path: str) -> None:
@@ -212,7 +212,7 @@ def get_ELF_type(filepath: str) -> str:
 def main():
     # make sure the correct number of arguments are provided, learn to fucking type
     if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <ELF_path> <output_executable>")
+        print(f"Usage: {sys.argv[0]} <ELF_path> <output_executable_filepath>")
         sys.exit(1)
 
     ELF_path: str = sys.argv[1] # path to the ELF
