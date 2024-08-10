@@ -2,6 +2,8 @@
 
 ***THIS TOOL DOES NOT REQUIRE ELEVATED PRIVILEGES***
 
+**IF YOU ARE USING THIS TOOL TO INJECT A SHARED OBJECT FILE, YOUR SHARED OBJECT MUST INCLUDE AN `__attribute__((constructor))` TO BE COMPATIBLE AS THAT IS THE FUNCTION WHICH WILL BE EXECUTED ONCE THE SHARED OBJECT FILE IS INJECTED AND EXECUTED WITHIN THE MEMORY OF IT'S TARGET PROCESS, SEE 'src/exampleSO2.c'**
+
 *Still a work in progress with changes to come, currently supports shared object files, working on support for executable ELF files*
 
 *Do not be a fucking idiot and start creaming if you intend to misuse this for illegal purposes, if you cant code something like this you wont be able to do much with it*
@@ -14,8 +16,6 @@ Dependencies:
 gcc, gdb, libdl-dev, python3
 
 To install and use:
-
-**IF YOU ARE USING THIS TOOL TO INJECT A SHARED OBJECT FILE, YOUR SHARED OBJECT MUST INCLUDE AN `__attribute__((constructor))` TO BE COMPATIBLE AS THAT IS THE FUNCTION WHICH WILL BE EXECUTED ONCE THE SHARED OBJECT FILE IS INJECTED AND EXECUTED WITHIN THE MEMORY OF IT'S TARGET PROCESS, SEE 'src/exampleSO2.c'**
 
 `sudo apt install -y gcc gdb libdl-dev python3` <br>
 `git clone https://github.com/EthanTwofishBlackwell/SharedObject_Injector.git` <br>
