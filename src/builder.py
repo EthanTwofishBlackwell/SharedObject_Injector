@@ -7,7 +7,10 @@ import sys
 import os
 import subprocess
 
-def generate_source(so_path: str, output_path: str) -> None:
+def generate_source_exe(so_path: str, output_path: str) -> None:
+    pass
+
+def generate_source_so(so_path: str, output_path: str) -> None:
     # read the shared object file
     with open(so_path, 'rb') as so_file:
         so_data: bytes = so_file.read()
@@ -192,38 +195,47 @@ int main() {{
 
     print(f"Generated source file: {output_path}") # confirm we made the baby
 
-# Executes file -b to determine the filetype of the file
-# if it is a .so it should contain 'shared object'
-# returns True if the file is a .so or else it will return False
-def is_shared_object(filepath: str) -> bool:
+# Executes file -b to determine the filetype information of the file
+def get_ELF_type(filepath: str) -> str:
     try:
         output: bytes = subprocess.check_output(["file", "-b", filepath], stderr=subprocess.DEVNULL)
-        return b"shared object" in output
+        if b"ELF" not in output:
+            return ""
+        if b"shared object" in output: 
+            return "so"
+        if b"executable" in output: 
+            return "exe"
+        return ""
     except subprocess.CalledProcessError:
         return False
     
 def main():
     # make sure the correct number of arguments are provided, learn to fucking type
     if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <so_path> <output_executable>")
+        print(f"Usage: {sys.argv[0]} <ELF_path> <output_executable>")
         sys.exit(1)
 
-    so_path: str = sys.argv[1] # path to the shared object
+    ELF_path: str = sys.argv[1] # path to the ELF
     output_executable: str = sys.argv[2] # output executable name
     temp_source: str = "temp_source.c" # temp src file
     
     
-    # really basic input validation for the .so file
-    if not os.path.isfile(so_path):
-        print(f"Error: The specified .so file does not exist: {so_path}")
+    # really basic input validation for the elf file
+    if not os.path.isfile(ELF_path):
+        print(f"Error: The specified ELF file does not exist: {ELF_path}")
         sys.exit(1)
 
-    if is_shared_object(so_path) == False:
-        print("Error: The specified file is not a shared object (.so) file.")
+    ELF_type: str = get_ELF_type(ELF_path)
+    if ELF_type == "":
+        print("Error: The specified file is not an executable or shared object ELF file.")
         sys.exit(1)
 
     # gen the C source code
-    generate_source(so_path, temp_source)
+    match (ELF_type):
+        case "so":
+            generate_source_so(ELF_path, temp_source)
+        case "exe":
+            generate_source_exe(ELF_path, temp_source)
 
     # compile the generated C code
     compile_cmd: str = f"gcc -o {output_executable} {temp_source} -ldl"
