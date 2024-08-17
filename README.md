@@ -4,8 +4,6 @@
 
 **IF YOU ARE USING THIS TOOL TO INJECT A SHARED OBJECT FILE, YOUR SHARED OBJECT MUST INCLUDE AN `__attribute__((constructor))` TO BE COMPATIBLE AS THAT IS THE FUNCTION WHICH WILL BE EXECUTED ONCE THE SHARED OBJECT FILE IS INJECTED AND EXECUTED WITHIN THE MEMORY OF IT'S TARGET PROCESS, SEE 'src/exampleSO2.c'**
 
-*Still a work in progress with changes to come, currently supports shared object files, working on support for executable ELF files*
-
 *Do not be a fucking idiot and start creaming if you intend to misuse this for illegal purposes, if you cant code something like this you wont be able to do much with it*
 
 This is a program created (kind of rushed) in python/C, which takes the path to either an executable ELF or shared object ELF file and embed it into a compiled program at a filepath specified by you.<br>

