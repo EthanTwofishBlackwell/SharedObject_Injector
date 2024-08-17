@@ -7,7 +7,7 @@ import sys
 import os
 import subprocess
 
-def generate_source(so_path: str, output_path: str) -> None:
+def generate_source_so(so_path: str, output_path: str) -> None:
     # read the shared object file
     with open(so_path, 'rb') as so_file:
         so_data: bytes = so_file.read()
@@ -192,38 +192,106 @@ int main() {{
 
     print(f"Generated source file: {output_path}") # confirm we made the baby
 
-# Executes file -b to determine the filetype of the file
-# if it is a .so it should contain 'shared object'
-# returns True if the file is a .so or else it will return False
-def is_shared_object(filepath: str) -> bool:
+# Fixed your shit builder xxx 
+def generate_source_exe(exe_path: str, output_path: str) -> None:
+    # Read the executable file
+    with open(exe_path, 'rb') as exe_file:
+        exe_data: bytes = exe_file.read()
+    c_code: str = f"""
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/mman.h>
+
+unsigned char exe_data[] = {{
+    {', '.join(f'0x{byte:02x}' for byte in exe_data)}
+}};
+size_t exe_data_size = sizeof(exe_data); 
+
+// Do a reflective ELF injection to load in the executable ELF into memory
+__attribute__((constructor)) void reflective_ELF_injection(void) {{
+
+    int fd  = memfd_create("reflective_inj", 0);
+    if (fd == -1) {{
+        perror("memfd_create");
+        return;
+    }}
+
+    write(fd, exe_data, exe_data_size);
+
+    char *const argv[] = {{NULL}};
+    char *const envp[] = {{NULL}};
+    if (fexecve(fd, argv, envp) == -1) {{
+        perror("fexecve");
+        return;
+    }}
+    close(fd);
+}}
+"""
+    # write the generated C code to a temporary file
+    tmp_file: str = f'exe_tmp.c'
+    with open(tmp_file, 'w') as output_file:
+        output_file.write(c_code)
+
+    # Generate the temporary .so
+    tmp_so_file: str = f'exe_tmp.so'
+    compile_cmd: str = f"gcc -shared -fPIC -o {tmp_so_file} {tmp_file}"
+    result = subprocess.run(compile_cmd, shell=True, capture_output=True, text=True)
+    if result.returncode != 0:
+        os.unlink(tmp_file)
+        print("Compilation failed:")
+        print(result.stderr) # print error output
+        sys.exit(1)
+
+    # Pack the .so
+    generate_source_so(tmp_so_file, output_path)
+
+    # Delete the temporary files
+    os.unlink(tmp_file)
+    os.unlink(tmp_so_file)
+
+# Executes file -b to determine the filetype information of the file
+def get_ELF_type(filepath: str) -> str:
     try:
         output: bytes = subprocess.check_output(["file", "-b", filepath], stderr=subprocess.DEVNULL)
-        return b"shared object" in output
+        if b"ELF" not in output:
+            return ""
+        if b"shared object" in output: 
+            return "so"
+        if b"executable" in output: 
+            return "exe"
+        return ""
     except subprocess.CalledProcessError:
         return False
     
 def main():
     # make sure the correct number of arguments are provided, learn to fucking type
     if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <so_path> <output_executable>")
+        print(f"Usage: {sys.argv[0]} <ELF_path> <output_executable_filepath>")
         sys.exit(1)
 
-    so_path: str = sys.argv[1] # path to the shared object
+    ELF_path: str = sys.argv[1] # path to the ELF
     output_executable: str = sys.argv[2] # output executable name
     temp_source: str = "temp_source.c" # temp src file
     
     
-    # really basic input validation for the .so file
-    if not os.path.isfile(so_path):
-        print(f"Error: The specified .so file does not exist: {so_path}")
+    # really basic input validation for the elf file
+    if not os.path.isfile(ELF_path):
+        print(f"Error: The specified ELF file does not exist: {ELF_path}")
         sys.exit(1)
 
-    if is_shared_object(so_path) == False:
-        print("Error: The specified file is not a shared object (.so) file.")
+    ELF_type: str = get_ELF_type(ELF_path)
+    if ELF_type == "":
+        print("Error: The specified file is not an executable or shared object ELF file.")
         sys.exit(1)
 
     # gen the C source code
-    generate_source(so_path, temp_source)
+    match (ELF_type):
+        case "so":
+            generate_source_so(ELF_path, temp_source)
+        case "exe":
+            generate_source_exe(ELF_path, temp_source)
 
     # compile the generated C code
     compile_cmd: str = f"gcc -o {output_executable} {temp_source} -ldl"
