@@ -230,12 +230,12 @@ __attribute__((constructor)) void reflective_ELF_injection(void) {{
 }}
 """
     # write the generated C code to a temporary file
-    tmp_file = f'exe_tmp.c'
+    tmp_file: str = f'exe_tmp.c'
     with open(tmp_file, 'w') as output_file:
         output_file.write(c_code)
 
     # Generate the temporary .so
-    tmp_so_file = f'exe_tmp.so'
+    tmp_so_file: str = f'exe_tmp.so'
     compile_cmd: str = f"gcc -shared -fPIC -o {tmp_so_file} {tmp_file}"
     result = subprocess.run(compile_cmd, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
